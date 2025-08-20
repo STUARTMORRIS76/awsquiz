@@ -31,8 +31,12 @@
     </div>
     <div id="question"></div>
     <ul id="choices"></ul>
-    <button id="submitBtn">Submit</button>
-    <button id="nextBtn" style="display: none;">Next</button>
+    <div id="buttonGroup" style="margin-top: 20px;">
+		<button id="backBtn" style="display: none;">Back</button>
+		<button id="nextBtn" style="display: none;">Next</button>
+		<button id="submitBtn">Submit</button>
+	</div>
+
     <button id="restartBtn" style="display: none;">Restart Quiz</button>
     <div id="feedback"></div>
     <div id="score">Score: 0</div>
@@ -42,6 +46,7 @@
 
 
 document.getElementById("loadQuizBtn").onclick = () => {
+  window.loadedQuiz = null;
   const selectedFile = document.getElementById("quizSelector").value;
   const feedbackEl = document.getElementById("loadFeedback");
 
@@ -59,16 +64,17 @@ document.getElementById("loadQuizBtn").onclick = () => {
   script.id = "quizDataScript";
 
   // Success handler
-  script.onload = () => {
-    if (typeof awsQuiz === "undefined" || !Array.isArray(awsQuiz)) {
-      feedbackEl.textContent = "❌ Quiz data is invalid or missing.";
-      feedbackEl.style.color = "red";
-      return;
-    }
-    feedbackEl.textContent = "✅ Quiz loaded successfully!";
-    feedbackEl.style.color = "green";
-    startQuiz(awsQuiz);
-  };
+ script.onload = () => {
+  if (!window.loadedQuiz || !Array.isArray(window.loadedQuiz)) {
+    feedbackEl.textContent = "❌ Quiz data is invalid or missing.";
+    feedbackEl.style.color = "red";
+    return;
+  }
+
+  feedbackEl.textContent = "✅ Quiz loaded successfully!";
+  feedbackEl.style.color = "green";
+  startQuiz(window.loadedQuiz);
+};
 
   // Error handler
   script.onerror = () => {
@@ -84,7 +90,7 @@ document.getElementById("loadQuizBtn").onclick = () => {
 
   <script>
 function startQuiz(data) {
- 
+ let userAnswers = new Array(data.length).fill(null);
 let currentQuestion = 0;
 let score = 0;
 let selectedIndex = null;
@@ -104,7 +110,7 @@ const totalQuestionsEl = document.getElementById("totalQuestions");
 const correctCountEl = document.getElementById("correctCount");
 const incorrectCountEl = document.getElementById("incorrectCount");
 
-let quiz = shuffleQuiz([...awsQuiz]);
+let quiz = shuffleQuiz([...data]);
 totalQuestionsEl.textContent = quiz.length;
 
 function shuffleQuiz(array) {
@@ -117,32 +123,50 @@ function shuffleQuiz(array) {
 
 function loadQuestion() {
   const q = quiz[currentQuestion];
+
+  // Update status bar
   questionNumberEl.textContent = currentQuestion + 1;
-  questionEl.textContent = q.question;
+  totalQuestionsEl.textContent = quiz.length;
+
+  // Clear previous content
+  questionEl.innerHTML = "";
   choicesEl.innerHTML = "";
   feedbackEl.textContent = "";
   selectedIndex = null;
 
+  // Show category
+  const categoryEl = document.createElement("div");
+  categoryEl.textContent = `📂 Category: ${q.category}`;
+  categoryEl.style.fontSize = "14px";
+  categoryEl.style.marginBottom = "10px";
+  questionEl.appendChild(categoryEl);
 
-const categoryEl = document.createElement("div");
-categoryEl.textContent = `📂 Category: ${quiz[currentQuestion].category}`;
-categoryEl.style.fontSize = "14px";
-categoryEl.style.marginBottom = "10px";
-questionEl.innerHTML = "";
-questionEl.appendChild(categoryEl);
-questionEl.appendChild(document.createTextNode(quiz[currentQuestion].question));
+  // Show question text
+  const questionText = document.createElement("div");
+  questionText.textContent = q.question;
+  questionEl.appendChild(questionText);
 
-
+  // Render choices
   q.choices.forEach((choice, index) => {
     const li = document.createElement("li");
     li.textContent = choice;
     li.onclick = () => selectChoice(index, li);
     choicesEl.appendChild(li);
+
+    // Highlight previously selected answer
+    if (userAnswers[currentQuestion] === index) {
+      li.classList.add("selected");
+      selectedIndex = index;
+    }
   });
 
-  submitBtn.style.display = "inline-block";
-  nextBtn.style.display = "none";
+  // Show/hide buttons
+  submitBtn.style.display = userAnswers[currentQuestion] === null ? "inline-block" : "none";
+  nextBtn.style.display = userAnswers[currentQuestion] !== null ? "inline-block" : "none";
+  backBtn.style.display = currentQuestion > 0 ? "inline-block" : "none";
+  restartBtn.style.display = "none";
 }
+
 
 function selectChoice(index, li) {
   selectedIndex = index;
@@ -160,6 +184,7 @@ submitBtn.onclick = () => {
 
   const correctAnswer = quiz[currentQuestion].answer;
   const selectedLi = choicesEl.children[selectedIndex];
+  userAnswers[currentQuestion] = selectedIndex;
 
   if (selectedIndex === correctAnswer) {
     selectedLi.classList.add("correct");
@@ -192,12 +217,23 @@ feedbackEl.appendChild(explanationEl);
   nextBtn.style.display = "inline-block";
 };
 
+backBtn.onclick = () => {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    loadQuestion();
+    nextBtn.style.display = "inline-block";
+    backBtn.style.display = currentQuestion > 0 ? "inline-block" : "none";
+  }
+};
+
 nextBtn.onclick = () => {
   currentQuestion++;
   if (currentQuestion < quiz.length) {
     loadQuestion();
+    backBtn.style.display = "inline-block";
   } else {
     showFinalScore();
+    backBtn.style.display = "none";
   }
 };
 
@@ -206,7 +242,7 @@ restartBtn.onclick = () => {
   score = 0;
   correctCount = 0;
   incorrectCount = 0;
-  quiz = shuffleQuiz([...awsQuiz]);
+  quiz = shuffleQuiz([...data]);
   scoreEl.textContent = "Score: 0";
   correctCountEl.textContent = "0";
   incorrectCountEl.textContent = "0";

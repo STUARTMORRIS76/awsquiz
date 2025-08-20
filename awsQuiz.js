@@ -1,4 +1,4 @@
-const awsQuiz = [
+window.loadedQuiz = [
   {
     question: "What does EC2 stand for in AWS?",
     choices: ["Elastic Compute Cloud", "Enhanced Cloud Control", "External Compute Cluster", "Elastic Container Core"],

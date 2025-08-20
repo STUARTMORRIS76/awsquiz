@@ -1,4 +1,4 @@
-const awsQuiz = [
+window.loadedQuiz = [
   {
     category: "Hybrid Networking",
     question: "Which AWS service provides a dedicated network connection from your premises to AWS?",

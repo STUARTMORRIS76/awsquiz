@@ -108,3 +108,8 @@ button {
   background-color: #005fa3;
 }
 
+#buttonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
