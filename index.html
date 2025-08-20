@@ -51,7 +51,7 @@ const totalQuestionsEl = document.getElementById("totalQuestions");
 const correctCountEl = document.getElementById("correctCount");
 const incorrectCountEl = document.getElementById("incorrectCount");
 
-let quiz = shuffleQuiz([...awsQuiz]);
+let quiz = shuffleQuiz([awsQuiz]);
 totalQuestionsEl.textContent = quiz.length;
 
 function shuffleQuiz(array) {
@@ -212,11 +212,12 @@ function showFinalScore() {
 }
 
 // Start the quiz
-//loadQuestion();
+loadQuestion();
 
 </script>
 </body>
 </html>
+
 
 
 
