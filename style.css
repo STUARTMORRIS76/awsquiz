@@ -75,3 +75,36 @@ button {
   border: none;
   border-radius: 5px;
 }
+
+#quizSelector {
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 2px solid #007acc;
+  border-radius: 8px;
+  background-color: #f0f8ff;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 10px;
+}
+
+#quizSelector:hover {
+  background-color: #e6f2ff;
+  border-color: #005fa3;
+}
+
+#loadQuizBtn {
+  padding: 10px 15px;
+  font-size: 16px;
+  background-color: #007acc;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#loadQuizBtn:hover {
+  background-color: #005fa3;
+}
+

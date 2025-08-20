@@ -7,8 +7,22 @@
  
 </head>
 <body>
+
+
+
   <div class="quiz-container">
     <h1>☁️ AWS Quiz Challenge 2.2</h1>
+<div style="text-align: center; margin-bottom: 20px;">
+  <label for="quizSelector" style="font-weight: bold; margin-right: 10px;">Choose Quiz:</label>
+  <select id="quizSelector">
+    <option value="awsQuiz.js">AWS</option>
+    <option value="azureQuiz.js">Azure</option>
+    <option value="gcpQuiz.js">GCP</option>
+  </select>
+  <button id="loadQuizBtn">Load Quiz</button>
+<div id="loadFeedback" style="margin-top: 10px; font-weight: bold;"></div>
+</div>
+
     <div id="statusBar">
       Question: <span id="questionNumber">1</span> /
       <span id="totalQuestions">20</span> |
@@ -24,8 +38,53 @@
     <div id="score">Score: 0</div>
   </div>
 
- <script src="quizdata.js"></script>
+ <script>
+
+
+document.getElementById("loadQuizBtn").onclick = () => {
+  const selectedFile = document.getElementById("quizSelector").value;
+  const feedbackEl = document.getElementById("loadFeedback");
+
+  // Clear previous feedback
+  feedbackEl.textContent = "";
+  feedbackEl.style.color = "";
+
+  // Remove old script if it exists
+  const oldScript = document.getElementById("quizDataScript");
+  if (oldScript) oldScript.remove();
+
+  // Create new script
+  const script = document.createElement("script");
+  script.src = selectedFile;
+  script.id = "quizDataScript";
+
+  // Success handler
+  script.onload = () => {
+    if (typeof awsQuiz === "undefined" || !Array.isArray(awsQuiz)) {
+      feedbackEl.textContent = "❌ Quiz data is invalid or missing.";
+      feedbackEl.style.color = "red";
+      return;
+    }
+    feedbackEl.textContent = "✅ Quiz loaded successfully!";
+    feedbackEl.style.color = "green";
+    startQuiz(awsQuiz);
+  };
+
+  // Error handler
+  script.onerror = () => {
+    feedbackEl.textContent = "⚠️ Failed to load quiz. Please try again or check the file.";
+    feedbackEl.style.color = "red";
+  };
+
+  document.body.appendChild(script);
+};
+
+
+</script>
+
   <script>
+function startQuiz(data) {
+ 
 let currentQuestion = 0;
 let score = 0;
 let selectedIndex = null;
@@ -166,7 +225,7 @@ function showFinalScore() {
 
 // Start the quiz
 loadQuestion();
-
+};
 </script>
 </body>
 </html>
