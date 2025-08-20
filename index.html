@@ -23,7 +23,13 @@
     <div id="feedback"></div>
     <div id="score">Score: 0</div>
   </div>
-<script src="quizdata.js"></script>
+  
+<select id="categorySelect">
+  <option value="compute">Compute</option>
+  <option value="storage">Storage</option>
+  <option value="networking">Networking</option>
+</select>
+<button onclick="loadCategory()">Start Quiz</button>
  
   <script>
 let currentQuestion = 0;
@@ -56,6 +62,47 @@ function shuffleQuiz(array) {
   return array;
 }
 
+
+function startQuiz(data) {
+  currentQuestion = 0;
+  score = 0;
+  correctCount = 0;
+  incorrectCount = 0;
+  quiz = shuffleQuiz([...data]);
+  totalQuestionsEl.textContent = quiz.length;
+  scoreEl.textContent = "Score: 0";
+  correctCountEl.textContent = "0";
+  incorrectCountEl.textContent = "0";
+  restartBtn.style.display = "none";
+  loadQuestion();
+}
+    
+function loadCategory() {
+  const category = document.getElementById("categorySelect").value;
+  const script = document.createElement("script");
+  //script.src = `${category}.js`;
+  script.src = 'quizdata.js';
+  script.onload = () => {
+    // Use the correct variable based on category
+    let quizData;
+    switch (category) {
+      case "compute":
+        quizData = computeQuiz;
+        break;
+      case "storage":
+        quizData = storageQuiz;
+        break;
+      case "networking":
+        quizData = networkingQuiz;
+        break;
+    }
+
+    startQuiz(quizData);
+  };
+  document.body.appendChild(script);
+}
+
+    
 function loadQuestion() {
   const q = quiz[currentQuestion];
   questionNumberEl.textContent = currentQuestion + 1;
@@ -165,11 +212,12 @@ function showFinalScore() {
 }
 
 // Start the quiz
-loadQuestion();
+//loadQuestion();
 
 </script>
 </body>
 </html>
+
 
 
 
