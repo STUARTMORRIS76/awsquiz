@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AWS Quiz Challenge</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>☁️ AWS Quiz Challenge</h1>
+    <div id="statusBar">
+      Question: <span id="questionNumber">1</span> /
+      <span id="totalQuestions">20</span> |
+      ✅ Correct: <span id="correctCount">0</span> |
+      ❌ Incorrect: <span id="incorrectCount">0</span>
+    </div>
+    <div id="question"></div>
+    <ul id="choices"></ul>
+    <button id="submitBtn">Submit</button>
+    <button id="nextBtn" style="display: none;">Next</button>
+    <button id="restartBtn" style="display: none;">Restart Quiz</button>
+    <div id="feedback"></div>
+    <div id="score">Score: 0</div>
+  </div>
+
+  <script src="quizData.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
